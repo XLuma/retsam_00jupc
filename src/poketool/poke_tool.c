@@ -903,12 +903,17 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 	ppd=sys_AllocMemory(HEAPID_BASE_SYSTEM,sizeof(POKEMON_PERSONAL_DATA));
 	PokeFormNoPersonalDataGet(monsno,form_no,ppd);
 
-	if(monsno==MONSNO_NUKENIN){
+	//leaving commented just in case
+	/*if(monsno==MONSNO_NUKENIN){
 		hpmax=1;
+	}*/
+	if(monsno >= MONSNO_HUSIGIDANE && monsno <= MONSNO_AUSU){
+		hpmax = 1;
 	}
-	else{
+	//uncommenting this because of eggs, although the above condition should prevent eggs/bad eggs from getting into the else condition
+	/*else{
 		hpmax=((2*ppd->basic_hp+hp_rnd+hp_exp/4)*level/100+level+10);
-	}
+	}*/
 
 	PokeParaPut(pp,ID_PARA_hpmax,(u8 *)&hpmax);
 
@@ -938,8 +943,12 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 		;
 	}
 	else{
-		if(monsno==MONSNO_NUKENIN){
+		//commenting again just in case
+		/*if(monsno==MONSNO_NUKENIN){
 			hp=1;
+		}*/
+		if(monsno >= MONSNO_HUSIGIDANE && monsno <= MONSNO_AUSU){
+			hp = 1;
 		}
 		else if(hp==0){
 			hp=hpmax;
