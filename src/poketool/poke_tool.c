@@ -876,6 +876,7 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 	int	level;
 	int	form_no;
 	int	speabi1,speabi2,rnd;
+	int	hp_current;
 	POKEMON_PERSONAL_DATA *ppd;
 	BOOL	flag;
 
@@ -897,6 +898,7 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 	spedef_rnd=	PokeParaGet(pp,ID_PARA_spedef_rnd,	0);
 	spedef_exp=	PokeParaGet(pp,ID_PARA_spedef_exp,	0);
 	form_no=	PokeParaGet(pp,ID_PARA_form_no,		0);
+	hp_current = PokeParaGet(pp, ID_PARA_dummy_p4_1, 0);
 
 	monsno=PokeParaGet(pp,ID_PARA_monsno,0);
 
@@ -938,13 +940,16 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 		;
 	}
 	else{
-		if(monsno==MONSNO_NUKENIN){
+		if(monsno==MONSNO_NUKENIN){ //no changes to shedinja
 			hp=1;
 		}
-		else if(hp==0){
+		else if(hp==0 && hp_current == 0){ //if hp_current is also 0, we know the mon is dead for sure.
 			hp=hpmax;
 		}
-		else{
+		else if(hp_current != 0 && hpmax == oldhpmax){ //if hpmax == oldhpmax, there was no levelup and we  know that we are coming from a PC.
+			hp = hp_current;
+		}
+		else{ //if we here, its a legit levelup
 			hp+=(hpmax-oldhpmax);
 		}
 	}
@@ -1705,6 +1710,7 @@ static	void	PokeParaPutAct(POKEMON_PARAM *pp,int id,const void *buf)
 		break;
 	case ID_PARA_hp:
 		pp->pcp.hp=buf16[0];
+		pp-?ppp4.dummy_p4_1=buf16[0];
 		break;
 	case ID_PARA_hpmax:
 		pp->pcp.hpmax=buf16[0];
