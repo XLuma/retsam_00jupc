@@ -943,8 +943,11 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 		if(monsno==MONSNO_NUKENIN){ //no changes to shedinja
 			hp=1;
 		}
-		else if(hp==0 && hp_current == 0){ //if hp_current is also 0, we know the mon is dead for sure.
-			hp=hpmax;
+		else if(hp==0){ //leave this just in case
+			hp=hpmax;s
+		}
+		else if(hp_current == 0){ //if the mon was ko prior to being put in the pc, this should prevent it from being healed up. Previous code fully restored it
+			hp = 0;
 		}
 		else if(hp_current != 0 && hpmax == oldhpmax){ //if hpmax == oldhpmax, there was no levelup and we  know that we are coming from a PC.
 			hp = hp_current;
