@@ -955,6 +955,7 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 		else{ //if we here, its a legit levelup
 			hp+=(hpmax-oldhpmax);
 		}
+		PokeParaPut(pp,ID_PARA_hp,(u8 *)&hp);
 	}
 
 	if(hp){
