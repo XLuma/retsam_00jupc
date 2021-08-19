@@ -944,7 +944,7 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 			hp=1;
 		}
 		else if(hp==0){ //leave this just in case
-			hp=hpmax;s
+			hp=hpmax;
 		}
 		else if(hp_current == 0){ //if the mon was ko prior to being put in the pc, this should prevent it from being healed up. Previous code fully restored it
 			hp = 0;
