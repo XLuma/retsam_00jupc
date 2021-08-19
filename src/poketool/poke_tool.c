@@ -1710,8 +1710,8 @@ static	void	PokeParaPutAct(POKEMON_PARAM *pp,int id,const void *buf)
 		break;
 	case ID_PARA_hp:
 		pp->pcp.hp=buf16[0];
-		pp-?ppp4.dummy_p4_1=buf16[0];
-		break;
+		id = ID_PARA_dummy_p4_1;
+		goto default;
 	case ID_PARA_hpmax:
 		pp->pcp.hpmax=buf16[0];
 		break;
