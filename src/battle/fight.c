@@ -1117,10 +1117,10 @@ static	void	FightEnd(PROC *proc)
 	//TV番組コール
 	//ゲット時は、捕まえたポケモンのPP
 	//それ以外は、対戦相手のPP
-	if(bw->win_lose_flag!=FIGHT_POKE_GET){
+	if(bw->win_lose_flag!=FIGHT_POKE_GET ){
 		int count_poke = PokeParty_GetPokeCount(bw->poke_party[CLIENT_NO_MINE]);
 		BattleWorkTVDataSet(bw,PokeParty_GetMemberPointer(bw->poke_party[CLIENT_NO_ENEMY],0));
-		if(bw->win_lose_flag != FIGHT_LOSE && bw->win_lose_flag != FIGHT_ESCAPE){
+		if(bw->win_lose_flag != FIGHT_LOSE && bw->win_lose_flag != FIGHT_ESCAPE && bw->fight_type != FIGHT_TYPE_YASEI){
 			bw->poke_party[CLIENT_NO_MINE] = bw->poke_party[CLIENT_NO_ENEMY];
 			for(i=0;i<count_poke;i++){
 				POKEMON_PARAM *pp = PokeParty_GetMemberPointer(bw->poke_party[CLIENT_NO_MINE], i);
