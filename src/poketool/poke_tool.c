@@ -946,7 +946,7 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 		else if(hp==0 && oldhpmax != hpmax){ //If a rare candy is used and the pokemon is dead, or data initialisation
 			hp=hpmax;
 		}
-		if(hp_current == 0 && hp != hpmax){ //if the mon was ko prior to being put in the pc, this should prevent it from being healed up. Previous code fully restored it. Also prevent rewriting data that comes from init
+		if(hp_current == 0 && hp == 0){ //if the mon was ko prior to being put in the pc, this should prevent it from being healed up. Previous code fully restored it. Also prevent rewriting data that comes from init
 			hp = 0;
 		}
 		else if(hp_current != 0 && oldhpmax == 0){ //If hp_current is not 0, set the hp val as hp_current
