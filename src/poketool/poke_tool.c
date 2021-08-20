@@ -943,7 +943,7 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 		if(monsno==MONSNO_NUKENIN){ //no changes to shedinja
 			hp=1;
 		}
-		else if(hp==0 && hpmax != oldhpmax){ //If a rare candy is used and the pokemon is dead
+		else if(hp==0 && oldhpmax != 0){ //If a rare candy is used and the pokemon is dead
 			hp=hpmax;
 		}
 		else if(hp_current == 0){ //if the mon was ko prior to being put in the pc, this should prevent it from being healed up. Previous code fully restored it
