@@ -884,7 +884,7 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 
 	level=		PokeParaGet(pp,ID_PARA_level,		0);
 	oldhpmax=	PokeParaGet(pp,ID_PARA_hpmax,		0);
-	hp=			PokeParaGet(pp,ID_PARA_hp,			0);
+	hp=			PokeParaGet(pp,ID_PARA_dummy_p4_1,			0); //hacky i guess, but hey it works
 	hp_rnd=		PokeParaGet(pp,ID_PARA_hp_rnd,		0);
 	hp_exp=		PokeParaGet(pp,ID_PARA_hp_exp,		0);
 	pow_rnd=	PokeParaGet(pp,ID_PARA_pow_rnd,		0);
@@ -943,13 +943,13 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 		if(monsno==MONSNO_NUKENIN){ //no changes to shedinja
 			hp=1;
 		}
-		else if(hp==0){ //leave this just in case
+		else if(hp==0 && hpmax != oldhpmax){ //If a rare candy is used and the pokemon is dead
 			hp=hpmax;
 		}
 		else if(hp_current == 0){ //if the mon was ko prior to being put in the pc, this should prevent it from being healed up. Previous code fully restored it
 			hp = 0;
 		}
-		else if(hp_current != 0 && hpmax == oldhpmax){ //if hpmax == oldhpmax, there was no levelup and we  know that we are coming from a PC.
+		else if(hp_current != 0 && oldhpmax == 0){ //If hp_current is not 0, set the hp val as hp_current
 			hp = hp_current;
 		}
 		else{ //if we here, its a legit levelup
@@ -1712,10 +1712,12 @@ static	void	PokeParaPutAct(POKEMON_PARAM *pp,int id,const void *buf)
 	case ID_PARA_cb_id:
 		pp->pcp.cb_id=buf8[0];	
 		break;
+#if 0
 	case ID_PARA_hp:
 		pp->pcp.hp=buf16[0];
 		id = ID_PARA_dummy_p4_1;
 		goto default;
+#endif
 	case ID_PARA_hpmax:
 		pp->pcp.hpmax=buf16[0];
 		break;
@@ -1739,6 +1741,11 @@ static	void	PokeParaPutAct(POKEMON_PARAM *pp,int id,const void *buf)
 		break;
 	case ID_PARA_cb_core:
 		CB_Tool_CoreData_Copy((CB_CORE *)buf,&pp->pcp.cb_core);
+		break;
+	case ID_PARA_hp:
+		pp->pcp.hp=buf16[0];
+		id = ID_PARA_dummy_p4_1;
+		PokePasoParaPutAct((POKEMON_PASO_PARAM *)&pp->ppp,id,buf);
 		break;
 	default:
 		PokePasoParaPutAct((POKEMON_PASO_PARAM *)&pp->ppp,id,buf);
@@ -5501,7 +5508,8 @@ void	PokeReplace(POKEMON_PASO_PARAM *ppp,POKEMON_PARAM *pp)
 	PokeParaPut(pp,ID_PARA_condition,(u8 *)&i);
 
 //HP初期化
-	PokeParaPut(pp,ID_PARA_hp,(u8 *)&i);
+	//PokeParaPut(pp,ID_PARA_hp,(u8 *)&i);
+	//deactivated since we keep the hp val before putting in pc
 	PokeParaPut(pp,ID_PARA_hpmax,(u8 *)&i);
 
 //メールデータ
