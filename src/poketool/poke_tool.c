@@ -943,7 +943,7 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 	}
 	else{
 		if(monsno==MONSNO_NUKENIN){ //no changes to shedinja
-			hp=1;
+			hp_to_write=1;
 		}
 		else if(hp==0 && oldhpmax != hpmax){ //If a rare candy is used and the pokemon is dead, or data initialisation
 			hp_to_write=hpmax;
