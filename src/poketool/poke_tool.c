@@ -945,17 +945,11 @@ void	PokeParaCalcLevelUp(POKEMON_PARAM *pp)
 		if(monsno==MONSNO_NUKENIN){ //no changes to shedinja
 			hp_to_write=1;
 		}
-		else if(hp==0 && oldhpmax != hpmax){ //If a rare candy is used and the pokemon is dead, or data initialisation
-			hp_to_write=hpmax;
-		}
-		if(hp_current == 0 && hp == 0){ //if the mon was ko prior to being put in the pc, this should prevent it from being healed up. Previous code fully restored it. Also prevent rewriting data that comes from init
-			hp_to_write = 0;
-		}
-		else if(hp_current != 0 && oldhpmax == 0){ //If hp_current is not 0, set the hp val as hp_current
+		if(hp_current > -1 && oldhpmax == 0){ //If hp_current is 0 or more and not a levelup, assign it
 			hp_to_write = hp_current;
 		}
-		else if(hp_to_write == hpmax && hp_current == 0){ //allows struct initialisation to get out and write the hp value
-			;
+		if(hp_to_write == 0 && PokeParaGet(pp, ID_PARA_dummy_p2_1, NULL) == 1){ //If a rare candy is used and the pokemon is dead, or data initialisation
+			hp_to_write=hpmax;
 		}
 		else{ //if we here, its a legit levelup
 			hp_to_write+=(hpmax-oldhpmax);
