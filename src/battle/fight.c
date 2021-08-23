@@ -201,6 +201,7 @@ static void StartMsgWinMove( TCB_PTR tcb, void *work );
 
 static	BOOL	BossTrTypeCheck(u16 tr_type);
 static	void	FightSioServerBootCheck(BATTLE_WORK *bw,BATTLE_PARAM *bp);
+static POKEMON_PARAM *rndPkmn(POKEMON_PARAM *pp);
 
 static	void FightWirelessIconSet( void );	///< 2008.05.15 goto
 
@@ -1042,7 +1043,7 @@ static	void	FightInit(PROC *proc)
 	}
 }
 
-static void rndPkmn(POKEMON_PARAM *pp)
+static POKEMON_PARAM *rndPkmn(POKEMON_PARAM *pp)
 {
 	POKEMON_PARAM *new_mon;
 	int monsno, new_monsno;
