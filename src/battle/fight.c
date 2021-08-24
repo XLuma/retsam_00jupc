@@ -1042,7 +1042,7 @@ static POKEMON_PARAM *rndPkmn(POKEMON_PARAM *pp)
 	u16 num = gf_rand() % (MONSNO_END - 1) + 1; 
 	u32 item;
 	//u16 nickname;
-	//STRCODE  MonsName[MONS_NAME_SIZE+EOM_SIZE];
+	STRCODE  MonsName[MONS_NAME_SIZE+EOM_SIZE];
 	u32 status_cond;
 	u32 prev_hp;
 	u32 species;
@@ -1050,7 +1050,7 @@ static POKEMON_PARAM *rndPkmn(POKEMON_PARAM *pp)
 	u16	curr_hpmax = PokeParaGet(pp, ID_PARA_hpmax, NULL);
 	u16	new_hpmax;
 
-	//PokeParaGet(pp, ID_PARA_nickname, MonsName); //Get nickname
+	PokeParaGet(pp, ID_PARA_nickname, MonsName); //Get nickname
 	item = PokeParaGet(pp, ID_PARA_item, NULL); //Get held item
 	monsno = PokeParaGet(pp, ID_PARA_monsno, NULL); //Get Pokedex number
 	level = PokeParaGet(pp, ID_PARA_level, NULL); //Get level
@@ -1064,15 +1064,17 @@ static POKEMON_PARAM *rndPkmn(POKEMON_PARAM *pp)
 	if (monsno == MONSNO_TAMAGO) return(pp); //if its an egg we do nothing
 
 	new_mon = PokemonParam_AllocWork(HEAPID_WORLD);
-	PokeParaInit(new_mon);
+
+	PokeParaInit(new_mon); //Struct init
+
 	PokeParaSet(new_mon, num, level, POW_RND, RND_NO_SET, 0, ID_NO_SET, 0); //create new Pokemon Struct, actually does everything automaticly
 
-	//PokeParaPut(new_mon, ID_PARA_nickname, MonsName); //give back the nicknames
+	PokeParaPut(new_mon, ID_PARA_nickname, MonsName); //give back the nicknames
 	PokeParaPut(new_mon, ID_PARA_condition, &status_cond); //give back status condition
 
 	new_hpmax = PokeParaGet(new_mon, ID_PARA_hpmax, 0);
 
-	if (prev_hp > new_hpmax)
+	if (prev_hp >= new_hpmax)
 		PokeParaPut(new_mon, ID_PARA_hp, &new_hpmax); //If the current hp value is bugger than the maximum hp val, we give the new mon hp_max
 	else
 		PokeParaPut(new_mon, ID_PARA_hp, &prev_hp); //Otherwise the value is between new_mon 's hp max, and 0
