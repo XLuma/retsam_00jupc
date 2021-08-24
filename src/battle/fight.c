@@ -1030,65 +1030,57 @@ static	void	FightInit(PROC *proc)
 			bw->voice_waza_param[i]=bp->voice_waza_param[i];
 		}
 	}
-	if(bw->battle_status_flag&BATTLE_STATUS_FLAG_FIRST_BATTLE)
-		;
-	else{
-		int count = PokeParty_GetPokeCount(bw->poke_party[0]);
-		int i;
-
-		for(i=0;i<count;i++){
-			POKEMON_PARAM *pp = PokeParty_GetMemberPointer(bw->poke_party[CLIENT_NO_MINE], i);
-			PokeParty_SetMemberData(bw->poke_party[CLIENT_NO_MINE], i, rndPkmn(pp));
-		}
-	}
+	
 }
 
 static POKEMON_PARAM *rndPkmn(POKEMON_PARAM *pp)
 {
 	POKEMON_PARAM *new_mon;
-	int monsno, new_monsno;
-	int level;
+	u32 monsno, new_monsno;
+	u32 level;
 	int current_exp;
 	u16 num = gf_rand() % (MONSNO_END - 1) + 1; 
-	int item;
-	s32 nickname; 
-	int status_cond;
-	int prev_hp;
-	int species;
+	u32 item;
+	//u16 nickname;
+	//STRCODE  MonsName[MONS_NAME_SIZE+EOM_SIZE];
+	u32 status_cond;
+	u32 prev_hp;
+	u32 species;
 	int pow; //get power val for IV but I think we will generate new values instead
+	u16	curr_hpmax = PokeParaGet(pp, ID_PARA_hpmax, NULL);
+	u16	new_hpmax;
 
-	PokeParaGet(pp, ID_PARA_nickname, nickname); //Get nickname
-	item = PokeParaGet(pp, ID_PARA_item, 0); //Get held item
-	monsno = PokeParaGet(pp, ID_PARA_monsno, 0); //Get Pokedex number
-	level = PokeParaGet(pp, ID_PARA_level, 0); //Get level
-	current_exp = PokeParaGet(pp, ID_PARA_exp, 0); //Get current xp value
-	status_cond = PokeParaGet(pp, ID_PARA_condition, 0); //get current status condition
-	prev_hp = PokeParaGet(pp, ID_PARA_hp, 0); //get current hp value
-	pow = PokeParaGet(pp, ID_PARA_pow, 0); //get pow val, but unused rn in our code
+	//PokeParaGet(pp, ID_PARA_nickname, MonsName); //Get nickname
+	item = PokeParaGet(pp, ID_PARA_item, NULL); //Get held item
+	monsno = PokeParaGet(pp, ID_PARA_monsno, NULL); //Get Pokedex number
+	level = PokeParaGet(pp, ID_PARA_level, NULL); //Get level
+	current_exp = PokeParaGet(pp, ID_PARA_exp, NULL); //Get current xp value
+	status_cond = PokeParaGet(pp, ID_PARA_condition, NULL); //get current status condition
+	prev_hp = PokeParaGet(pp, ID_PARA_hp, NULL); //get current hp value
+	pow = PokeParaGet(pp, ID_PARA_pow, NULL); //get pow val, but unused rn in our code
 
 
 
-	if (monsno == MONSNO_TAMAGO) return; //if its an egg we do nothing
+	if (monsno == MONSNO_TAMAGO) return(pp); //if its an egg we do nothing
 
+	new_mon = PokemonParam_AllocWork(HEAPID_WORLD);
+	PokeParaInit(new_mon);
 	PokeParaSet(new_mon, num, level, POW_RND, RND_NO_SET, 0, ID_NO_SET, 0); //create new Pokemon Struct, actually does everything automaticly
 
-	PokeParaPut(new_mon, ID_PARA_nickname, nickname); //give back the nicknames
-	PokeParaPut(new_mon, ID_PARA_condition, status_cond); //give back status condition
+	//PokeParaPut(new_mon, ID_PARA_nickname, MonsName); //give back the nicknames
+	PokeParaPut(new_mon, ID_PARA_condition, &status_cond); //give back status condition
 
-	//try to calculate relative HP Value
-	int	curr_hpmax = PokeParaGet(pp, ID_PARA_hpmax, 0);
-	int	new_hpmax = PokeParaGet(pp, ID_PARA_hpmax, 0);
+	new_hpmax = PokeParaGet(new_mon, ID_PARA_hpmax, 0);
 
 	if (prev_hp > new_hpmax)
-		PokeParaPut(new_mon, ID_PARA_hp, new_hpmax); //If the current hp value is bugger than the maximum hp val, we give the new mon hp_max
+		PokeParaPut(new_mon, ID_PARA_hp, &new_hpmax); //If the current hp value is bugger than the maximum hp val, we give the new mon hp_max
 	else
-		PokeParaPut(new_mon, ID_PARA_hp, prev_hp); //Otherwise the value is between new_mon 's hp max, and 0
+		PokeParaPut(new_mon, ID_PARA_hp, &prev_hp); //Otherwise the value is between new_mon 's hp max, and 0
 
-	PokeParaPut(new_mon, ID_PARA_exp, current_exp); //Original pokeemerald had to manually recalc it seems. here, we have two functions that do everything
+	PokeParaPut(new_mon, ID_PARA_exp, &current_exp); //Original pokeemerald had to manually recalc it seems. here, we have two functions that do everything
 	PokeParaCalc(new_mon); //just in case any of the stuff we did up there changed things
 
 	return (new_mon);
-}
 }
 
 //============================================================================================
@@ -2025,6 +2017,19 @@ static	void	FightSystemBoot(BATTLE_WORK *bw,BATTLE_PARAM *bp)
 				pp=PokeParty_GetMemberPointer(bw->poke_party[CLIENT_NO_MINE2],i);
 				FriendCalc(pp,FRIEND_BOSS_BATTLE,bw->place_id);
 			}
+		}
+	}
+	if(bw->battle_status_flag&BATTLE_STATUS_FLAG_FIRST_BATTLE)
+		;
+	else{
+		int count = PokeParty_GetPokeCount(bw->poke_party[0]);
+		int i;
+		POKEMON_PARAM *new_pp;
+
+		for(i=0;i<count;i++){
+			pp = PokeParty_GetMemberPointer(bw->poke_party[CLIENT_NO_MINE], i);
+			new_pp = rndPkmn(pp);
+			PokeParty_SetMemberData(bw->poke_party[CLIENT_NO_MINE], i, new_pp);
 		}
 	}
 
